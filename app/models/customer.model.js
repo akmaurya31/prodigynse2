@@ -249,38 +249,40 @@ Customer.removeAll = result => {
 
 Customer.getFatcamm = (email, result) => {
 
-
-
   sql.query("SELECT * FROM users where email='"+`${email}`+"'", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
+      
+   let u_id=res[0].id; 
 
-    console.log("users: ", res);
-    result(null, res);
+    sql.query("SELECT * FROM 	vk_onbording_kyc where 	user_id='"+`${u_id}`+"'", (err, res212) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+     
+      res.datasrc=res212;
+     // result(null, res);       
+    });
+   
 
-
-
-
-
-
-
-
-
-
-
-
-
+     let 	my_income_range_id=res[0].income_range;
+ if(my_income_range_id>=1){ 
+  sql.query("SELECT * FROM 	income_range where 	income_range_id='"+`${my_income_range_id}`+"'", (err, res222) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }   
+    res.intbl=res222;
+    result(null, res);    
   });
-};
-
-
-
-
-
-
+}
  
-
+});
+};
 module.exports = Customer;

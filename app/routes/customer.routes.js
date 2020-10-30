@@ -33,7 +33,7 @@ module.exports = app => {
   app.post("/getNSEProducts",customers.sendData);
   // app.get("/getNSEProducts/:classname",customers.getnseproductsbyclass);
 
-  app.post("/readFatca",customers.readFatca);
+  app.post("/readFatca1",customers.readFatca1);
 
   app.post("/xmlhandler",customers.handler);
 

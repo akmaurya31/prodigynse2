@@ -1,6 +1,6 @@
 const Customer = require("../models/customer.model.js");
 const substrings = require("../../node_modules/substrings");
-
+// const substr = require("../../node_modules/substr");
 //  const parser = require('../../node_modules/xml2json');
 //onst https = require('../../node_modules/https');
 var mysql = require('../../node_modules/mysql');
@@ -304,11 +304,12 @@ exports.getusers = (req, res) => {
 //////////////////////
 
 
-exports.readFatca= (req, res) => {
+exports.readFatca1= (req, res) => {
 
-  // console.log("AGAMJI")
+  // console.log("AGAMJI ji", req.body)
 
 const postarray= { email:req.body.email }
+//console.log(postarray)
   
   Customer.getFatcamm(postarray.email,(err, data) => {
     if (err)
@@ -319,8 +320,72 @@ const postarray= { email:req.body.email }
     else {  
       
      // res.send(data);
+      let urs_full=data
       let urs=data[0]
-      console.log(urs);
+      let urs1=data.intbl
+      let urs2=data.datasrc
+     console.log("agamursFULL--",urs_full);
+    //  console.log("agamurs1--",urs1);
+  //   console.log("ahgamurs2---",urs2[0].type);
+     // console.log(urs.exposedPolitically);
+
+   //  var months = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
+    //  s='2016-10-14'; 
+//     var strxxx = "Hello world!";
+// var resxxx = strxxx.substring(1, 4); //ell\
+// resdatemy=typeof(String(urs.date_of_birrth));
+// var s = resdatemy.substring(0, 10);
+
+
+// console.log("MYORIGINAL-----",resxxx,resdatemy);
+
+    
+  //   resdatemy=String(urs.date_of_birrth);
+  //    var ss = resdatemy.substring(4, 16);
+  // var kkd=s=Date(ss,"dd-mm-yyyy");
+
+
+    //console.log("MYORIGINALssssss-----",ss,kkd);
+
+    //  var b = s.split(/\D/);
+    //  console.log("FULLDATE---",b)
+    //    console.log("MYFORMATE---",b[2] + '-' + months[b[1]-1]+'-'+b[0]);
+    
+    resdatemy=String(urs.date_of_birrth);
+    
+    xb=resdatemy.split(" ");
+    
+
+  let mydob_xb=xb[2]+"-"+xb[1]+"-"+xb[3]
+
+
+  console.log("my resdatemy ",resdatemy,"--------",xb[1],xb[2],xb[3],"mydob_xb",mydob_xb);
+
+
+     let itype=urs2[0].type;
+       itype=itype.toLowerCase();
+     var text;
+
+     console.log("the i type is",itype);
+
+  switch(itype) {
+    case "passport":
+      text = "A";
+    break;
+    case "aadhaar":
+    text = "G";
+    break;
+    case "Driving License":
+    text = "E";
+    break;
+    default:
+    text = "X";
+  }
+
+     var pep= (urs.exposedPolitically == '1') ? "N" : "Y";
+//jitna ho ske dynamic karo  --as lgendre pancard emnail dob ok. sir
+
+
 
       let arrk={NMFIIService:{service_request:{
         appln_id:'MFS21399',
@@ -334,20 +399,22 @@ const postarray= { email:req.body.email }
         ubo_applicable_count:'2',
         iin:urs.iin,
         kyc:{
-          app_income_code:'34',
+          app_income_code:urs1[0].id,
           net_worth_sign:'+',
           net_worth:'5000',
           net_worth_date:'31-Jul-2015',
-          pep:'Y',
-          occ_code:'1',
+         // pep: testBoolean ? "attributeTwo" : "attributeTwoToo",
+        //  pep: if(urs.exposedPolitically == '1') ? "N" : "Y",
+           pep:pep,
+          occ_code:urs.occupation,
           source_wealth:'03',
           corp_servs:'01'
         },
         Fatca:{
-          dob:'20-JAN-1995',
-             addr_type:2,  //<--- from table doc address
-            data_src:'E', //<---  from table doc DL types
-            log_name:urs.email,
+             dob:mydob_xb,   //timezone issue
+             addr_type:"1",  //<--- from table doc address
+             data_src:text, //<---  from table doc DL types
+            log_name:urs.email,     //email id already dynamic
              country_of_birth:'IND', //<---
               place_birth: urs.city,
             tax_residency:NaN,  //<---
@@ -414,7 +481,7 @@ const postarray= { email:req.body.email }
 
 
 let xml_agamji=jsonxml(arrk);
-     console.log(xml_agamji);
+      console.log(xml_agamji);
 
      fs.appendFile('mynse2.xml', xml_agamji, function (err) {
       if (err) throw err;
@@ -428,7 +495,7 @@ let xml_agamji=jsonxml(arrk);
       {'Content-Type': 'text/xml'}
     }).then(res22=>{
       // console.log(res22);
-      console.log("AGAMREACT");
+     // console.log("AGAMREACT");
 
   let agammess='';
 
@@ -438,7 +505,7 @@ let xml_agamji=jsonxml(arrk);
   var fatcaresult2=result1.DataSet['diffgr:diffgram'].NMFIISERVICES.service_response;
   // var fatcaresult3=result1.DataSet['diffgr:diffgram'].NMFIISERVICES.service_response.return_msg
   // console.log("fatsts", fatcaresult)
-  console.log("kjm", fatcaresult2)
+  // console.log("kjm", fatcaresult2)
   // console.log("hjkhjk", fatcaresult3)
 
   //if(fatcaresult2)
@@ -479,7 +546,7 @@ let xml_agamji=jsonxml(arrk);
       res.send(agammess);
 
 
-      console.log("AGAMREACT22");
+     // console.log("AGAMREACT22");
 
     }).catch(err=>{console.log(err)});
 
